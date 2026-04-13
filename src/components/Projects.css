@@ -1,0 +1,132 @@
+.projects-section {
+  padding: 100px 0;
+}
+
+.projects-header {
+  margin-bottom: 4rem;
+}
+
+.projects-subtitle {
+  color: var(--text-muted);
+  max-width: 450px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.project-card {
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.project-card:hover .project-preview-inner {
+  transform: scale(1.05);
+}
+
+.project-preview {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.project-preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, var(--bg-card) 100%);
+}
+
+.project-preview-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 2rem;
+  width: 80%;
+  transition: transform 0.4s ease;
+}
+
+.code-line {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  width: 100%;
+}
+
+.code-line.short { width: 50%; }
+.code-line.medium { width: 75%; }
+
+.project-info {
+  padding: 1.5rem 2rem 2rem;
+}
+
+.project-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.project-desc {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.tag {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.7rem;
+  background: rgba(204, 255, 0, 0.08);
+  color: var(--accent-color);
+  border: 1px solid rgba(204, 255, 0, 0.15);
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.project-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+  transition: color 0.2s ease;
+}
+
+.project-link:hover {
+  color: var(--accent-color);
+}
+
+.project-link.muted {
+  color: var(--text-muted);
+}
+
+.project-link.muted:hover {
+  color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}
