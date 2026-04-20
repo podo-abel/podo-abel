@@ -131,7 +131,7 @@ const Contact = () => {
         <footer className="footer">
           <div className="footer-line"></div>
           <p className="footer-text">
-            © 2026 abel. Built with <span className="text-accent">believe</span> & passion.
+            © 2026 Abel Dingetu. Built with <span className="text-accent">believe</span> & passion.
           </p>
         </footer>
       </div>
