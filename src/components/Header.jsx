@@ -22,6 +22,8 @@ const Header = () => {
           <a href="#home">Home</a>
           <a href="#about">About</a>
           <a href="#projects">Work</a>
+          <a href="#resume">Resume</a>
+          <a href="#certificates">Certs</a>
           <a href="#contact">Contact</a>
         </nav>
         <a href="#contact" className="btn-secondary nav-btn">
