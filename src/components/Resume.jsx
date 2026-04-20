@@ -1,56 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from '../utils/api';
 import generateCV from '../utils/generateCV';
 import './Resume.css';
 
-const experienceData = [
+const fallbackExperience = [
   {
     id: 1,
     role: 'Frontend Developer',
     company: 'Self-Employed / Freelance',
     period: '2025 — Present',
-    description:
-      'Building modern web applications with React, Next.js, and clean UI/UX principles. Working on real-world client projects and personal products.',
+    description: 'Building modern web applications with React, Next.js, and clean UI/UX principles.',
     tags: ['React', 'JavaScript', 'CSS'],
-  },
-  {
-    id: 2,
-    role: 'Web Development Student',
-    company: 'Self-Taught & Online Courses',
-    period: '2024 — 2025',
-    description:
-      'Intensive self-study covering HTML, CSS, JavaScript, React, Node.js, and design fundamentals through platforms like freeCodeCamp, Udemy, and YouTube.',
-    tags: ['HTML/CSS', 'JavaScript', 'Git'],
-  },
-  {
-    id: 3,
-    role: 'Open Source Contributor',
-    company: 'GitHub Community',
-    period: '2024 — Present',
-    description:
-      'Contributing to open source projects, fixing bugs, and collaborating with developers worldwide to improve codebases.',
-    tags: ['Open Source', 'Git', 'Collaboration'],
   },
 ];
 
-const educationData = [
+const fallbackEducation = [
   {
     id: 1,
     degree: 'Software Engineering',
     institution: 'University / College',
     period: '2023 — Present',
-    description: 'Studying computer science fundamentals, algorithms, data structures, and software engineering best practices.',
-  },
-  {
-    id: 2,
-    degree: 'Online Certifications',
-    institution: 'Various Platforms',
-    period: '2024 — Present',
-    description: 'Completed multiple certifications in web development, React, JavaScript, and responsive design.',
+    description: 'Studying computer science fundamentals, algorithms, and software engineering.',
   },
 ];
 
 const Resume = () => {
   const [activeTab, setActiveTab] = useState('experience');
+  const [experienceData, setExperienceData] = useState(fallbackExperience);
+  const [educationData, setEducationData] = useState(fallbackEducation);
+
+  useEffect(() => {
+    api.getExperience()
+      .then((data) => setExperienceData(data))
+      .catch(() => {});
+    api.getEducation()
+      .then((data) => setEducationData(data))
+      .catch(() => {});
+  }, []);
 
   return (
     <section id="resume" className="section resume-section">
@@ -111,7 +97,7 @@ const Resume = () => {
                     <span className="timeline-period">{item.period}</span>
                   </div>
                   <p className="timeline-desc">{item.description}</p>
-                  {item.tags && (
+                  {item.tags && item.tags.length > 0 && (
                     <div className="timeline-tags">
                       {item.tags.map((tag) => (
                         <span className="tag" key={tag}>{tag}</span>

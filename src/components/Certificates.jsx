@@ -1,61 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { api } from '../utils/api';
 import './Certificates.css';
 
-const certificatesData = [
-  {
-    id: 1,
-    title: 'Responsive Web Design',
-    issuer: 'freeCodeCamp',
-    date: '2024',
-    icon: '🌐',
-    color: '#0a3d2a',
-  },
-  {
-    id: 2,
-    title: 'JavaScript Algorithms & Data Structures',
-    issuer: 'freeCodeCamp',
-    date: '2024',
-    icon: '⚡',
-    color: '#2a1a3d',
-  },
-  {
-    id: 3,
-    title: 'Front End Development Libraries',
-    issuer: 'freeCodeCamp',
-    date: '2025',
-    icon: '📚',
-    color: '#1a2a3d',
-  },
-  {
-    id: 4,
-    title: 'React — The Complete Guide',
-    issuer: 'Udemy',
-    date: '2025',
-    icon: '⚛️',
-    color: '#3d2a0a',
-  },
-  {
-    id: 5,
-    title: 'Git & GitHub Mastery',
-    issuer: 'Coursera',
-    date: '2025',
-    icon: '🔀',
-    color: '#1a3d1a',
-  },
-  {
-    id: 6,
-    title: 'UI/UX Design Fundamentals',
-    issuer: 'Google',
-    date: '2025',
-    icon: '🎨',
-    color: '#3d1a2a',
-  },
+const fallbackCerts = [
+  { id: 1, title: 'Responsive Web Design', issuer: 'freeCodeCamp', date: '2024', icon: '🌐', color: '#0a3d2a' },
+  { id: 2, title: 'JavaScript Algorithms & Data Structures', issuer: 'freeCodeCamp', date: '2024', icon: '⚡', color: '#2a1a3d' },
+  { id: 3, title: 'Front End Development Libraries', issuer: 'freeCodeCamp', date: '2025', icon: '📚', color: '#1a2a3d' },
+  { id: 4, title: 'React — The Complete Guide', issuer: 'Udemy', date: '2025', icon: '⚛️', color: '#3d2a0a' },
+  { id: 5, title: 'Git & GitHub Mastery', issuer: 'Coursera', date: '2025', icon: '🔀', color: '#1a3d1a' },
+  { id: 6, title: 'UI/UX Design Fundamentals', issuer: 'Google', date: '2025', icon: '🎨', color: '#3d1a2a' },
 ];
 
 const Certificates = () => {
+  const [certificatesData, setCertificatesData] = useState(fallbackCerts);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const carouselRef = useRef(null);
+
+  useEffect(() => {
+    api.getCertificates()
+      .then((data) => {
+        if (data.length > 0) setCertificatesData(data);
+      })
+      .catch(() => {});
+  }, []);
 
   const visibleCount = 3;
   const maxIndex = Math.max(0, certificatesData.length - visibleCount);

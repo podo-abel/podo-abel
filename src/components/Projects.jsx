@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from '../utils/api';
 import './Projects.css';
 
-const projectsData = [
+const fallbackProjects = [
   {
     id: 1,
     title: 'E-Commerce Platform',
     description: 'A modern online shopping experience with cart, checkout and payment integration.',
     tags: ['React', 'Node.js', 'Stripe'],
     color: '#1a3a2a',
+    github_url: 'https://github.com/podo-abel',
+    live_url: '#',
   },
   {
     id: 2,
@@ -15,6 +18,8 @@ const projectsData = [
     description: 'Real-time data visualization dashboard with interactive charts and dark mode.',
     tags: ['React', 'D3.js', 'Firebase'],
     color: '#1a2a3a',
+    github_url: 'https://github.com/podo-abel',
+    live_url: '#',
   },
   {
     id: 3,
@@ -22,6 +27,8 @@ const projectsData = [
     description: 'Full-stack social platform with real-time messaging and media sharing.',
     tags: ['Next.js', 'MongoDB', 'Socket.io'],
     color: '#2a1a3a',
+    github_url: 'https://github.com/podo-abel',
+    live_url: '#',
   },
   {
     id: 4,
@@ -29,10 +36,20 @@ const projectsData = [
     description: 'Conversational AI interface powered by modern language models.',
     tags: ['Python', 'React', 'OpenAI'],
     color: '#3a2a1a',
+    github_url: 'https://github.com/podo-abel',
+    live_url: '#',
   },
 ];
 
 const Projects = () => {
+  const [projects, setProjects] = useState(fallbackProjects);
+
+  useEffect(() => {
+    api.getProjects()
+      .then((data) => setProjects(data))
+      .catch(() => {/* Use fallback data */});
+  }, []);
+
   return (
     <section id="projects" className="section projects-section">
       <div className="container">
@@ -50,7 +67,7 @@ const Projects = () => {
         </div>
 
         <div className="projects-grid">
-          {projectsData.map((project) => (
+          {projects.map((project) => (
             <div className="project-card glass-card" key={project.id}>
               <div
                 className="project-preview"
@@ -68,19 +85,26 @@ const Projects = () => {
                 <h3 className="project-title">{project.title}</h3>
                 <p className="project-desc">{project.description}</p>
                 <div className="project-tags">
-                  {project.tags.map((tag) => (
+                  {(project.tags || []).map((tag) => (
                     <span className="tag" key={tag}>{tag}</span>
                   ))}
                 </div>
                 <div className="project-links">
-                  <a href="#" className="project-link">
-                    View Project
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="7" y1="17" x2="17" y2="7"></line>
-                      <polyline points="7 7 17 7 17 17"></polyline>
-                    </svg>
-                  </a>
-                  <a href="#" className="project-link muted">
+                  {project.live_url && project.live_url !== '#' && (
+                    <a href={project.live_url} className="project-link" target="_blank" rel="noopener noreferrer">
+                      View Project
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="7" y1="17" x2="17" y2="7"></line>
+                        <polyline points="7 7 17 7 17 17"></polyline>
+                      </svg>
+                    </a>
+                  )}
+                  <a
+                    href={project.github_url || 'https://github.com/podo-abel'}
+                    className={`project-link ${project.live_url && project.live_url !== '#' ? 'muted' : ''}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Source Code
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="16 18 22 12 16 6"></polyline>
