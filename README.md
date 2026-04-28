@@ -1,10 +1,21 @@
-<<<<<<< HEAD
-- 👋 Hi, I’m @podo-abel
--👀 am interested in coding 
-- 🌱 I’m currently learning software engineering 
-- 💞️ I’m looking to collaborate on web development 
-- 📫 How to reach me @abela_jr_ on Instagram 
-
+👋 Hi, I'm Abel
+🚀 About Me
+💻 I'm passionate about software engineering
+🎓 Final-year Computer Science student
+🌱 Currently learning and improving my skills in web development
+🤝 Open to collaborating on interesting projects
+🛠️ Tech Stack
+Languages: JavaScript, Python, C++
+Frontend: React, HTML, CSS
+Backend: Node.js, Express
+Tools: Git, GitHub, Linux
+📌 Projects
+🏠 Home Rental System – View houses online before visiting
+🚚 Delivery System – Order food and track delivery
+📫 Contact Me
+📸 Instagram: @abela_1r
+✉️ Email: abeldingetu1@gmail.com
+⭐️ Always learning, always building.
 <!---
 podo-abel/podo-abel is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 You can click the Preview link to take a look at your changes.
