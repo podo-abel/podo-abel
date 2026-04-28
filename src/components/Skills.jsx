@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from '../utils/api';
 import './Skills.css';
 
-const skillsData = [
-  { name: 'React.js', level: 90, category: 'Frontend' },
-  { name: 'JavaScript', level: 85, category: 'Frontend' },
-  { name: 'HTML/CSS', level: 95, category: 'Frontend' },
-  { name: 'Node.js', level: 75, category: 'Backend' },
-  { name: 'Python', level: 70, category: 'Backend' },
-  { name: 'UI/UX Design', level: 80, category: 'Design' },
+const fallbackSkills = [
+  { id: 1, name: 'React.js', level: 90, category: 'Frontend' },
+  { id: 2, name: 'JavaScript', level: 85, category: 'Frontend' },
+  { id: 3, name: 'HTML/CSS', level: 95, category: 'Frontend' },
+  { id: 4, name: 'Node.js', level: 75, category: 'Backend' },
+  { id: 5, name: 'Python', level: 70, category: 'Backend' },
+  { id: 6, name: 'UI/UX Design', level: 80, category: 'Design' },
 ];
 
 const toolsData = [
@@ -20,6 +21,16 @@ const toolsData = [
 ];
 
 const Skills = () => {
+  const [skillsData, setSkillsData] = useState(fallbackSkills);
+
+  useEffect(() => {
+    api.getSkills()
+      .then((data) => {
+        if (data.length > 0) setSkillsData(data);
+      })
+      .catch(() => {/* Use fallback data */});
+  }, []);
+
   return (
     <section id="about" className="section skills-section">
       <div className="container">
@@ -39,7 +50,7 @@ const Skills = () => {
             <h3 className="heading-md">Skills & Expertise</h3>
             <div className="skills-bars">
               {skillsData.map((skill) => (
-                <div className="skill-item" key={skill.name}>
+                <div className="skill-item" key={skill.id || skill.name}>
                   <div className="skill-info">
                     <span className="skill-name">{skill.name}</span>
                     <span className="skill-percent">{skill.level}%</span>

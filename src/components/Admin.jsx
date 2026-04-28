@@ -14,6 +14,7 @@ const Admin = () => {
   const [certificates, setCertificates] = useState([]);
   const [experience, setExperience] = useState([]);
   const [education, setEducation] = useState([]);
+  const [skills, setSkills] = useState([]);
 
   // Edit/Create modal state
   const [modal, setModal] = useState({ open: false, type: '', data: null, isEdit: false });
@@ -32,18 +33,20 @@ const Admin = () => {
 
   const loadAllData = async () => {
     try {
-      const [msgs, projs, certs, exps, edus] = await Promise.all([
+      const [msgs, projs, certs, exps, edus, skls] = await Promise.all([
         adminApi.getMessages(),
-        adminApi.createProject ? fetch('/api/projects').then(r => r.json()) : [],
+        fetch('/api/projects').then(r => r.json()),
         fetch('/api/certificates').then(r => r.json()),
         fetch('/api/resume/experience').then(r => r.json()),
         fetch('/api/resume/education').then(r => r.json()),
+        fetch('/api/skills').then(r => r.json()),
       ]);
       setMessages(msgs);
       setProjects(projs);
       setCertificates(certs);
       setExperience(exps);
       setEducation(edus);
+      setSkills(skls);
     } catch (err) {
       console.error('Error loading data:', err);
     }
@@ -75,6 +78,7 @@ const Admin = () => {
       else if (type === 'certificate') await adminApi.deleteCertificate(id);
       else if (type === 'experience') await adminApi.deleteExperience(id);
       else if (type === 'education') await adminApi.deleteEducation(id);
+      else if (type === 'skill') await adminApi.deleteSkill(id);
       loadAllData();
     } catch (err) {
       alert(err.message);
@@ -100,6 +104,7 @@ const Admin = () => {
       case 'certificate': return { title: '', issuer: '', date: '', icon: '📜', color: '#1a2a3a', display_order: 0 };
       case 'experience': return { role: '', company: '', period: '', description: '', tags: [], display_order: 0 };
       case 'education': return { degree: '', institution: '', period: '', description: '', display_order: 0 };
+      case 'skill': return { name: '', level: 80, category: 'Frontend', icon: '⚡', display_order: 0 };
       default: return {};
     }
   };
@@ -117,6 +122,9 @@ const Admin = () => {
         isEdit ? await adminApi.updateExperience(data.id, payload) : await adminApi.createExperience(payload);
       } else if (type === 'education') {
         isEdit ? await adminApi.updateEducation(data.id, data) : await adminApi.createEducation(data);
+      } else if (type === 'skill') {
+        const payload = { ...data, level: parseInt(data.level) || 80 };
+        isEdit ? await adminApi.updateSkill(data.id, payload) : await adminApi.createSkill(payload);
       }
       setModal({ open: false, type: '', data: null, isEdit: false });
       loadAllData();
@@ -173,10 +181,22 @@ const Admin = () => {
   const navItems = [
     { key: 'messages', label: 'Messages', icon: '📩', badge: unreadCount },
     { key: 'projects', label: 'Projects', icon: '🚀' },
+    { key: 'skills', label: 'Skills', icon: '⚡' },
     { key: 'certificates', label: 'Certificates', icon: '📜' },
     { key: 'experience', label: 'Experience', icon: '💼' },
     { key: 'education', label: 'Education', icon: '🎓' },
   ];
+
+  const getModalType = () => {
+    const map = {
+      projects: 'project',
+      certificates: 'certificate',
+      experience: 'experience',
+      education: 'education',
+      skills: 'skill',
+    };
+    return map[activeSection] || activeSection;
+  };
 
   return (
     <div className="admin-dashboard">
@@ -212,7 +232,7 @@ const Admin = () => {
             {navItems.find((n) => n.key === activeSection)?.label}
           </h1>
           {activeSection !== 'messages' && (
-            <button className="btn-primary admin-add-btn" onClick={() => openModal(activeSection === 'experience' ? 'experience' : activeSection === 'education' ? 'education' : activeSection === 'projects' ? 'project' : 'certificate')}>
+            <button className="btn-primary admin-add-btn" onClick={() => openModal(getModalType())}>
               + Add New
             </button>
           )}
@@ -265,6 +285,29 @@ const Admin = () => {
                   </div>
                   <p className="admin-card-body">{p.description}</p>
                   {p.github_url && <p className="admin-card-meta">GitHub: {p.github_url}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Skills */}
+          {activeSection === 'skills' && (
+            <div className="admin-list">
+              {skills.map((s) => (
+                <div className="admin-card" key={s.id}>
+                  <div className="admin-card-header">
+                    <div>
+                      <strong>{s.icon} {s.name}</strong>
+                      <span className="admin-card-meta">{s.category} · {s.level}%</span>
+                    </div>
+                    <div className="admin-card-actions">
+                      <button className="admin-action-btn" onClick={() => openModal('skill', s)}>✏️ Edit</button>
+                      <button className="admin-action-btn danger" onClick={() => handleDelete('skill', s.id)}>🗑</button>
+                    </div>
+                  </div>
+                  <div className="admin-skill-bar">
+                    <div className="admin-skill-bar-fill" style={{ width: `${s.level}%` }}></div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -378,6 +421,27 @@ const Admin = () => {
                   <div className="admin-field"><label>Institution</label><input value={modal.data.institution || ''} onChange={(e) => updateModalField('institution', e.target.value)} /></div>
                   <div className="admin-field"><label>Period</label><input value={modal.data.period || ''} onChange={(e) => updateModalField('period', e.target.value)} placeholder="e.g. 2023 — Present" /></div>
                   <div className="admin-field"><label>Description</label><textarea value={modal.data.description || ''} onChange={(e) => updateModalField('description', e.target.value)} /></div>
+                  <div className="admin-field"><label>Order</label><input type="number" value={modal.data.display_order || 0} onChange={(e) => updateModalField('display_order', parseInt(e.target.value))} /></div>
+                </>
+              )}
+              {modal.type === 'skill' && (
+                <>
+                  <div className="admin-field"><label>Name</label><input value={modal.data.name || ''} onChange={(e) => updateModalField('name', e.target.value)} placeholder="e.g. React.js" /></div>
+                  <div className="admin-field">
+                    <label>Level ({modal.data.level || 80}%)</label>
+                    <input type="range" min="0" max="100" value={modal.data.level || 80} onChange={(e) => updateModalField('level', parseInt(e.target.value))} className="admin-range" />
+                  </div>
+                  <div className="admin-field">
+                    <label>Category</label>
+                    <select value={modal.data.category || 'Frontend'} onChange={(e) => updateModalField('category', e.target.value)} className="admin-select">
+                      <option value="Frontend">Frontend</option>
+                      <option value="Backend">Backend</option>
+                      <option value="Design">Design</option>
+                      <option value="DevOps">DevOps</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div className="admin-field"><label>Icon (emoji)</label><input value={modal.data.icon || ''} onChange={(e) => updateModalField('icon', e.target.value)} /></div>
                   <div className="admin-field"><label>Order</label><input type="number" value={modal.data.display_order || 0} onChange={(e) => updateModalField('display_order', parseInt(e.target.value))} /></div>
                 </>
               )}

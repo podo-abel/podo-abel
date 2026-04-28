@@ -176,4 +176,29 @@ if (eduCount === 0) {
   console.log('ℹ️  Education already exists, skipping.');
 }
 
+// ─── Skills ───
+const skillCount = db.prepare('SELECT COUNT(*) as count FROM skills').get().count;
+if (skillCount === 0) {
+  const skills = [
+    { name: 'React.js', level: 90, category: 'Frontend', icon: '⚛️', display_order: 1 },
+    { name: 'JavaScript', level: 85, category: 'Frontend', icon: '⚡', display_order: 2 },
+    { name: 'HTML/CSS', level: 95, category: 'Frontend', icon: '🌐', display_order: 3 },
+    { name: 'Node.js', level: 75, category: 'Backend', icon: '🟢', display_order: 4 },
+    { name: 'Python', level: 70, category: 'Backend', icon: '🐍', display_order: 5 },
+    { name: 'UI/UX Design', level: 80, category: 'Design', icon: '🎨', display_order: 6 },
+  ];
+
+  const insertSkill = db.prepare(`
+    INSERT INTO skills (name, level, category, icon, display_order)
+    VALUES (@name, @level, @category, @icon, @display_order)
+  `);
+
+  for (const skill of skills) {
+    insertSkill.run(skill);
+  }
+  console.log(`✅ ${skills.length} skills seeded.`);
+} else {
+  console.log('ℹ️  Skills already exist, skipping.');
+}
+
 console.log('\n🎉 Database seeding complete!');

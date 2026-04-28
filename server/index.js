@@ -12,6 +12,7 @@ import contactRoutes from './routes/contact.js';
 import projectRoutes from './routes/projects.js';
 import certificateRoutes from './routes/certificates.js';
 import resumeRoutes from './routes/resume.js';
+import skillsRoutes from './routes/skills.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -27,13 +28,14 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/resume', resumeRoutes);
+app.use('/api/skills', skillsRoutes);
 
 // ─── Serve static frontend in production ───
 const distPath = path.join(__dirname, '..', 'dist');
 app.use(express.static(distPath));
 
 // Fallback to index.html for SPA routing
-app.get('*', (req, res) => {
+app.get('/{*splat}', (req, res) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(path.join(distPath, 'index.html'));
   }
@@ -49,6 +51,7 @@ app.listen(PORT, () => {
   console.log(`   GET    /api/certificates`);
   console.log(`   GET    /api/resume/experience`);
   console.log(`   GET    /api/resume/education`);
+  console.log(`   GET    /api/skills`);
   console.log(`   POST   /api/contact`);
   console.log(`\n   Admin panel: http://localhost:${PORT}/admin\n`);
 });

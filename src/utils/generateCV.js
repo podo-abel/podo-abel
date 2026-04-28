@@ -1,9 +1,79 @@
 import { jsPDF } from 'jspdf';
+import { api } from './api';
 
 /**
  * Generates and downloads a professional PDF CV for Abel Dingetu.
+ * Pulls data dynamically from the API, with hardcoded fallbacks.
  */
-export default function generateCV() {
+export default async function generateCV() {
+  // Fetch data from API with fallbacks
+  let skills, experience, education;
+
+  try {
+    [skills, experience, education] = await Promise.all([
+      api.getSkills().catch(() => null),
+      api.getExperience().catch(() => null),
+      api.getEducation().catch(() => null),
+    ]);
+  } catch {
+    // Use all fallbacks
+  }
+
+  // Fallback data
+  if (!skills || skills.length === 0) {
+    skills = [
+      { name: 'React.js', level: 90 },
+      { name: 'JavaScript', level: 85 },
+      { name: 'HTML / CSS', level: 95 },
+      { name: 'Node.js', level: 75 },
+      { name: 'Python', level: 70 },
+      { name: 'UI/UX Design', level: 80 },
+    ];
+  }
+
+  if (!experience || experience.length === 0) {
+    experience = [
+      {
+        role: 'Frontend Developer',
+        company: 'Self-Employed / Freelance',
+        period: '2025 — Present',
+        description: 'Building modern web applications with React, Next.js, and clean UI/UX principles. Working on real-world client projects and personal products.',
+        tags: ['React', 'JavaScript', 'CSS'],
+      },
+      {
+        role: 'Web Development Student',
+        company: 'Self-Taught & Online Courses',
+        period: '2024 — 2025',
+        description: 'Intensive self-study covering HTML, CSS, JavaScript, React, Node.js, and design fundamentals through platforms like freeCodeCamp, Udemy, and YouTube.',
+        tags: ['HTML/CSS', 'JavaScript', 'Git'],
+      },
+      {
+        role: 'Open Source Contributor',
+        company: 'GitHub Community',
+        period: '2024 — Present',
+        description: 'Contributing to open source projects, fixing bugs, and collaborating with developers worldwide to improve codebases.',
+        tags: ['Open Source', 'Git', 'Collaboration'],
+      },
+    ];
+  }
+
+  if (!education || education.length === 0) {
+    education = [
+      {
+        degree: 'Software Engineering',
+        institution: 'University / College',
+        period: '2023 — Present',
+        description: 'Studying computer science fundamentals, algorithms, data structures, and software engineering best practices.',
+      },
+      {
+        degree: 'Online Certifications',
+        institution: 'Various Platforms',
+        period: '2024 — Present',
+        description: 'Completed multiple certifications in web development, React, JavaScript, and responsive design.',
+      },
+    ];
+  }
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -81,15 +151,6 @@ export default function generateCV() {
   drawSectionTitle(doc, 'SKILLS & EXPERTISE', margin + 6, y, accent, white);
   y += 8;
 
-  const skills = [
-    { name: 'React.js', level: 90 },
-    { name: 'JavaScript', level: 85 },
-    { name: 'HTML / CSS', level: 95 },
-    { name: 'Node.js', level: 75 },
-    { name: 'Python', level: 70 },
-    { name: 'UI/UX Design', level: 80 },
-  ];
-
   // Draw skills in two columns
   const colWidth = (contentWidth - 16) / 2;
   skills.forEach((skill, i) => {
@@ -119,31 +180,10 @@ export default function generateCV() {
   drawSectionTitle(doc, 'EXPERIENCE', margin + 6, y, accent, white);
   y += 8;
 
-  const experience = [
-    {
-      role: 'Frontend Developer',
-      company: 'Self-Employed / Freelance',
-      period: '2025 — Present',
-      desc: 'Building modern web applications with React, Next.js, and clean UI/UX principles. Working on real-world client projects and personal products.',
-      tags: ['React', 'JavaScript', 'CSS'],
-    },
-    {
-      role: 'Web Development Student',
-      company: 'Self-Taught & Online Courses',
-      period: '2024 — 2025',
-      desc: 'Intensive self-study covering HTML, CSS, JavaScript, React, Node.js, and design fundamentals through platforms like freeCodeCamp, Udemy, and YouTube.',
-      tags: ['HTML/CSS', 'JavaScript', 'Git'],
-    },
-    {
-      role: 'Open Source Contributor',
-      company: 'GitHub Community',
-      period: '2024 — Present',
-      desc: 'Contributing to open source projects, fixing bugs, and collaborating with developers worldwide to improve codebases.',
-      tags: ['Open Source', 'Git', 'Collaboration'],
-    },
-  ];
-
   experience.forEach((exp) => {
+    // Ensure tags exist
+    const tags = exp.tags || [];
+
     // Card background
     doc.setFillColor(...cardBg);
     doc.roundedRect(margin + 10, y - 3, contentWidth - 14, 30, 2, 2, 'F');
@@ -163,13 +203,13 @@ export default function generateCV() {
 
     doc.setFontSize(8);
     doc.setTextColor(...muted);
-    const descLines = doc.splitTextToSize(exp.desc, contentWidth - 24);
+    const descLines = doc.splitTextToSize(exp.description || '', contentWidth - 24);
     doc.text(descLines, margin + 14, y + 13);
 
     // Tags
     let tagX = margin + 14;
     doc.setFontSize(7);
-    exp.tags.forEach((tag) => {
+    tags.forEach((tag) => {
       const tw = doc.getStringUnitWidth(tag) * 7 * 0.35 + 5;
       doc.setFillColor(30, 30, 30);
       doc.roundedRect(tagX, y + 20, tw, 5, 1, 1, 'F');
@@ -185,21 +225,6 @@ export default function generateCV() {
   y += 2;
   drawSectionTitle(doc, 'EDUCATION', margin + 6, y, accent, white);
   y += 8;
-
-  const education = [
-    {
-      degree: 'Software Engineering',
-      institution: 'University / College',
-      period: '2023 — Present',
-      desc: 'Studying computer science fundamentals, algorithms, data structures, and software engineering best practices.',
-    },
-    {
-      degree: 'Online Certifications',
-      institution: 'Various Platforms',
-      period: '2024 — Present',
-      desc: 'Completed multiple certifications in web development, React, JavaScript, and responsive design.',
-    },
-  ];
 
   education.forEach((edu) => {
     doc.setFillColor(...cardBg);
@@ -220,7 +245,7 @@ export default function generateCV() {
 
     doc.setFontSize(8);
     doc.setTextColor(...muted);
-    const descLines = doc.splitTextToSize(edu.desc, contentWidth - 24);
+    const descLines = doc.splitTextToSize(edu.description || '', contentWidth - 24);
     doc.text(descLines, margin + 14, y + 13);
 
     y += 26;
