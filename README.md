@@ -13,7 +13,7 @@ Tools: Git, GitHub, Linux
 🏠 Home Rental System – View houses online before visiting
 🚚 Delivery System – Order food and track delivery
 📫 Contact Me
-📸 Instagram: @abela_1r
+📸 Instagram: @a.talks.0
 ✉️ Email: abeldingetu1@gmail.com
 ⭐️ Always learning, always building.
 <!---
